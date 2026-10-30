@@ -1,3 +1,4 @@
+
 name: Publicar EDUCA+ no GitHub Pages
 
 on:
@@ -11,12 +12,13 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Baixar código
         uses: actions/checkout@v4
@@ -24,25 +26,32 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
+          cache: npm
 
       - name: Instalar dependências
-        run: npm install --include=optional
+        run: npm ci --include=optional
 
       - name: Gerar build com Vite
         run: npm run build
+        env:
+          VITE_BASE_PATH: /Educa-mais/
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-      - name: Enviar artefato do GitHub Pages
+      - name: Enviar artefato
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./dist"
+          path: ./dist
 
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     runs-on: ubuntu-latest
     needs: build
+
     steps:
       - name: Publicar no GitHub Pages
         id: deployment
