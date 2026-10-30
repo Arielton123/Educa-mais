@@ -26,11 +26,10 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
-          cache: npm
+          node-version: "20"
 
       - name: Instalar dependências
-        run: npm ci --include=optional
+        run: npm install --include=optional
 
       - name: Gerar build com Vite
         run: npm run build
@@ -53,6 +52,6 @@ jobs:
     needs: build
 
     steps:
-      - name: Publicar no GitHub Pages
+      - name: Publicar EDUCA+
         id: deployment
         uses: actions/deploy-pages@v4
